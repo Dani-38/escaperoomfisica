@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Escape Room: Fuga dal Carcere di Newton</title>
+    <style>
+        :root {
+            --prison-gray: #2b2b2b;
+            --rust: #cd5c5c;
+            --glow-green: #39ff14;
+        }
+        body {
+            background-color: #000;
+            color: #e0e0e0;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        #game-container {
+            background-color: var(--prison-gray);
+            padding: 30px;
+            border: 2px solid #444;
+            border-radius: 4px;
+            width: 95%;
+            max-width: 850px;
+            box-shadow: 0 0 50px rgba(0,0,0,0.9);
+            position: relative;
+        }
+        .header { text-align: center; color: var(--rust); border-bottom: 2px solid #444; margin-bottom: 20px; }
+        .room-image {
+            width: 100%;
+            height: 350px;
+            background-size: cover;
+            background-position: center;
+            border: 3px solid #111;
+            margin-bottom: 20px;
+            filter: sepia(0.3) contrast(1.1);
+        }
+        .room-info { margin-bottom: 20px; font-size: 1.1em; line-height: 1.6; }
+        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .option-btn {
+            background: #1a1a1a;
+            color: #bbb;
+            border: 1px solid #555;
+            padding: 15px;
+            text-align: left;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .option-btn:hover { background: #333; color: var(--glow-green); border-color: var(--glow-green); }
+        .input-area { display: flex; flex-direction: column; gap: 15px; }
+        input[type="text"] {
+            background: #000;
+            border: 1px solid #555;
+            color: var(--glow-green);
+            padding: 15px;
+            font-size: 1.2em;
+            outline: none;
+        }
+        #hint-box {
+            margin-top: 20px;
+            padding: 15px;
+            background: #3e1e1e;
+            border-left: 5px solid var(--rust);
+            color: #ffcccc;
+            display: none;
+        }
+        #progress { position: absolute; top: 10px; right: 20px; color: #777; font-size: 0.8em; }
+        button#submit-btn { background: var(--rust); color: white; border: none; padding: 15px; cursor: pointer; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <div id="progress">MODULO_EVASIONE | Stanza <span id="current-room-num">1</span>/15</div>
+    <div class="header">
+        <h1>SISTEMA PENITENZIARIO FISICA</h1>
+    </div>
+    
+    <div id="room-content">
+        <div id="room-img" class="room-image"></div>
+        <div class="room-info" id="room-desc"></div>
+        <div id="interactive-element"></div>
+    </div>
+
+    <div id="hint-box"></div>
+</div>
+
+<script>
+const rooms = [
+    // --- SEMINTERRATO (1-5) ---
+    {
+        title: "Sotterraneo - Muro dei Graffiti",
+        desc: "Ti trovi davanti a una parete scrostata. Qualcuno ha scritto col gesso: 'Come si definisce lo studio del moto che ignora le forze che lo causano?'.",
+        img: "https://images.unsplash.com/photo-1595113316349-9fa4eb24f884?q=80&w=800", // Gesso su muro rovinato
+        location: "Seminterrato",
+        type: "open",
+        answer: "cinematica",
+        hint: "Si occupa solo della descrizione geometrica del moto [1]."
+    },
+    {
+        title: "Sotterraneo - La Bilancia Precisa",
+        desc: "Su un tavolo c'è una bilancia. Un sensore indica che un blocco da 70 kg qui pesa esattamente 685 N (Newton). Guardando le tabelle di gravità terrestre, dove ti trovi?",
+        img: "https://images.unsplash.com/photo-1558231365-515286576b92?q=80&w=800", // Bilancia in officina buia
+        location: "Seminterrato",
+        type: "choice",
+        options: ["A) Livello del mare", "B) In cima all'Everest", "C) Al Polo Nord", "D) Sulla Luna"],
+        answer: 1, // Everest (g=9.786 -> 70*9.786 = 685)
+        hint: "Usa P = m * g. Al livello del mare peseresti 686 N, qui g è leggermente minore [2]."
+    },
+    {
+        title: "Sotterraneo - Pozzo di Ventilazione",
+        desc: "Guardi in alto verso un buco nel soffitto. Un sasso cade da un'altezza di 10m. Senza attrito, con che velocità istantanea colpirà il suolo?",
+        img: "https://images.unsplash.com/photo-1536566482680-fca31930a0bd?q=80&w=800", // Prospettiva dal basso verso l'alto di un pozzo
+        location: "Seminterrato",
+        type: "choice",
+        options: ["A) 9.8 m/s", "B) 14 m/s", "C) 19.6 m/s", "D) 98 m/s"],
+        answer: 1, // sqrt(2*9.8*10) = 14
+        hint: "Applica v = radice(2 * g * h) [3, 4]."
+    },
+    {
+        title: "Sotterraneo - Porta Bloccata",
+        desc: "Una porta di ferro è ferma. Non si muoverà a meno che tu non la spinga. Quale principio di Newton descrive questa 'pigrizia' della materia?",
+        img: "https://images.unsplash.com/photo-1517639493569-5666a7b2f494?q=80&w=800", // Porta di ferro arrugginita chiusa
+        location: "Seminterrato",
+        type: "open",
+        answer: "principio di inerzia",
+        hint: "È il primo dei tre principi della dinamica [5]."
+    },
+    {
+        title: "Sotterraneo - Pistone Idraulico",
+        desc: "Per sollevare un detrito usi un pistone. Una pressione applicata a un fluido confinato si trasmette ovunque inalterata. Chi ha formulato questo principio?",
+        img: "https://images.unsplash.com/photo-1581092160562-40aa08e78837?q=80&w=800", // Meccanismo idraulico industriale
+        location: "Seminterrato",
+        type: "open",
+        answer: "pascal",
+        hint: "Blaise Pascal lo scoprì nel 1652 [6]."
+    },
+    // --- SCALE (6) ---
+    {
+        title: "Scale Antincendio",
+        desc: "Sali le scale correndo. Percorri uno spostamento xf-xi di 12 metri in 4 secondi. Qual è la tua velocità media in m/s?",
+        img: "https://images.unsplash.com/photo-1544085311-1220216c96a0?q=80&w=800", // Scale di metallo carcerarie
+        location: "Scale",
+        type: "open",
+        answer: "3",
+        hint: "Velocità media = Delta x / Delta t [1]."
+    },
+    // --- CORRIDOI E BAGNI (7-10) ---
+    {
+        title: "Bagni Comuni - Il Sifone",
+        desc: "Ti nascondi nei bagni. Osservi un tubo a U sotto il lavandino. Quale principio assicura che il livello dell'acqua sia identico nei due rami della 'U'?",
+        img: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=800", // Bagno abbandonato fatiscente
+        location: "Bagni",
+        type: "choice",
+        options: ["A) Principio di Archimede", "B) Vasi Comunicanti", "C) Teorema di Torricelli", "D) Moto Laminare"],
+        answer: 1,
+        hint: "Per recipienti diversi con lo stesso liquido, l'altezza è uguale [7, 8]."
+    },
+    {
+        title: "Corridoio - La Conduttura Rotta",
+        desc: "Il corridoio è allagato per un'altezza di 5 metri. Qual è la pressione idrostatica (sovrapressione) sul fondo? (Usa densità=1000 kg/m³ e g=9.8 m/s²)",
+        img: "https://images.unsplash.com/photo-1510072839530-058866345ec1?q=80&w=800", // Corridoio buio e allagato
+        location: "Corridoi",
+        type: "choice",
+        options: ["A) 49000 Pa", "B) 101325 Pa", "C) 5000 Pa", "D) 1000 Pa"],
+        answer: 0, // p = rho*g*h = 1000*9.8*5
+        hint: "Usa la legge di Stevino: p = densità * g * h [9]."
+    },
+    {
+        title: "Atrio - La Reazione del Muro",
+        desc: "Dalla rabbia tiri un calcio a un muro. Senti un dolore immediato perché il muro ha esercitato su di te una forza uguale e contraria. Questo è il:",
+        img: "https://images.unsplash.com/photo-1563294314-256d0a7a0120?q=80&w=800", // Dettaglio muro di mattoni
+        location: "Atrio",
+        type: "choice",
+        options: ["A) 1° Principio", "B) 2° Principio", "C) 3° Principio (Azione e Reazione)", "D) Principio di Pascal"],
+        answer: 2,
+        hint: "Ad ogni azione corrisponde una reazione uguale e contraria su corpi diversi [10]."
+    },
+    {
+        title: "Atrio - Il Terminale",
+        desc: "Su un vecchio computer di sorveglianza devi inserire l'unità di misura S.I. della Forza per sbloccare la porta.",
+        img: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=800", // Computer hackerato in un ufficio
+        location: "Atrio",
+        type: "open",
+        answer: "newton",
+        hint: "Corrisponde a 1 kg * m/s² [11]."
+    },
+    // --- CORTILE (11-15) ---
+    {
+        title: "Cortile - Il Barile d'Acqua",
+        desc: "Nel cortile galleggia un pezzo di sughero. Riceve una spinta verso l'alto pari al peso del liquido spostato. Come si chiama questa spinta?",
+        img: "https://images.unsplash.com/photo-1495431037332-901391d4e08c?q=80&w=800", // Vasca esterna con riflessi d'acqua
+        location: "Cortile",
+        type: "choice",
+        options: ["A) Spinta di Stevino", "B) Spinta di Archimede", "C) Portata", "D) Sforzo Normale"],
+        answer: 1,
+        hint: "Regola il galleggiamento dei corpi [12]."
+    },
+    {
+        title: "Cortile - Le Tubature Esterne",
+        desc: "Osservi l'acqua passare da un tubo largo (10 cm²) a una strozzatura (2 cm²). Se la velocità nel tubo largo è di 1 m/s, quale sarà la velocità (in m/s) nella strozzatura?",
+        img: "https://images.unsplash.com/photo-1518331647614-7a1f04cd34cf?q=80&w=800", // Tubi industriali esterni
+        location: "Cortile",
+        type: "open",
+        answer: "5", // S1v1 = S2v2 -> 10*1 = 2*v2 -> v2=5
+        hint: "Usa l'equazione di continuità: S1 * v1 = S2 * v2. Se la sezione diminuisce di 5 volte, la velocità deve... [13, 14]."
+    },
+    {
+        title: "Cortile - Effetto Venturi",
+        desc: "Sempre in quella strozzatura del tubo di prima, cosa succede alla pressione del fluido ideale nel punto dove la velocità è maggiore?",
+        img: "https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?q=80&w=800", // Manometro collegato a un tubo
+        location: "Cortile",
+        type: "choice",
+        options: ["A) La pressione aumenta", "B) La pressione diminuisce", "C) La pressione resta uguale", "D) Il fluido si ferma"],
+        answer: 1,
+        hint: "Secondo Bernoulli, in un condotto orizzontale, dove la velocità aumenta, si ha una caduta di pressione [15]."
+    },
+    {
+        title: "Cortile - Lancio Oltre il Muro",
+        desc: "Devi lanciare un rampino oltre il muro di cinta. A quale inclinazione (angolo in gradi) otterrai la gittata massima?",
+        img: "https://images.unsplash.com/photo-1498354178607-a79df2916198?q=80&w=800", // Recinzione carceraria alta
+        location: "Cortile",
+        type: "choice",
+        options: ["A) 30°", "B) 45°", "C) 60°", "D) 90°"],
+        answer: 1,
+        hint: "La gittata max si ha per l'angolo che massimizza sin(2theta) [5, 16]."
+    },
+    {
+        title: "Il Cancello Finale",
+        desc: "Per aprire l'ultimo cancello, imposta il valore (in millimetri) della colonna di mercurio nell'esperimento di Torricelli per 1 atmosfera standard.",
+        img: "https://images.unsplash.com/photo-1510511459019-5dda7724fd87?q=80&w=800", // Lucchetto elettronico su cancello finale
+        location: "Uscita",
+        type: "open",
+        answer: "760",
+        hint: "760 mm Hg = 1 atm [17, 18]."
+    }
+];
+
+let currentRoom = 0;
+
+function loadRoom() {
+    const room = rooms[currentRoom];
+    document.getElementById('current-room-num').innerText = currentRoom + 1;
+    document.getElementById('hint-box').style.display = 'none';
+    document.getElementById('room-img').style.backgroundImage = `url(${room.img})`;
+    document.getElementById('room-desc').innerHTML = `<strong>${room.title}</strong><br><br>${room.desc}`;
+    
+    let html = "";
+    if (room.type === "open") {
+        html = `<div class="input-area">
+                    <input type="text" id="open-ans" placeholder="Inserisci valore o parola...">
+                    <button id="submit-btn" onclick="checkOpen()">SBLOCCA SERRATURA</button>
+                </div>`;
+    } else {
+        html = `<div class="options-grid">`;
+        room.options.forEach((opt, idx) => {
+            html += `<div class="option-btn" onclick="checkChoice(${idx})">${opt}</div>`;
+        });
+        html += `</div>`;
+    }
+    document.getElementById('interactive-element').innerHTML = html;
+}
+
+function checkOpen() {
+    const val = document.getElementById('open-ans').value.toLowerCase().trim();
+    if (val.includes(rooms[currentRoom].answer)) {
+        nextRoom();
+    } else {
+        handleError();
+    }
+}
+
+function checkChoice(idx) {
+    if (idx === rooms[currentRoom].answer) {
+        nextRoom();
+    } else {
+        handleError();
+    }
+}
+
+function handleError() {
+    const hintBox = document.getElementById('hint-box');
+    hintBox.innerHTML = "<strong>ALLARME:</strong> Risposta errata. <br>" + rooms[currentRoom].hint;
+    hintBox.style.display = 'block';
+}
+
+function nextRoom() {
+    currentRoom++;
+    if (currentRoom < rooms.length) {
+        loadRoom();
+    } else {
+        document.getElementById('game-container').innerHTML = `
+            <h1 style="color: var(--glow-green); text-align:center;">EVASIONE RIUSCITA</h1>
+            <div class="room-image" style="background-image: url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=800')"></div>
+            <p style="text-align:center">Sei fuori. Hai sconfitto il carcere della fisica usando il calcolo e la logica. Non voltarti indietro.</p>
+            <button onclick="location.reload()" style="display:block; margin: 20px auto; padding: 15px; background: var(--rust); color: white; border: none; cursor: pointer; width: 100%;">RIAPRI FASCICOLO DETENUTO</button>
+        `;
+    }
+}
+
+loadRoom();
+</script>
+</body>
+</html>
