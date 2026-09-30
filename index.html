@@ -273,7 +273,7 @@ function checkChoice(idx) {
 
 function handleError() {
     const hintBox = document.getElementById('hint-box');
-    hintBox.innerHTML = "<strong>ALLARME:</strong> Risposta errata.<br>" + rooms[currentRoom].hint;
+    hintBox.innerHTML = "<strong>ALLARME:</strong> Risposta errata. SUGGERIMENTO:<br>" + rooms[currentRoom].hint;
     hintBox.style.display = 'block';
 }
 
