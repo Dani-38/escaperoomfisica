@@ -31,15 +31,6 @@
             position: relative;
         }
         .header { text-align: center; color: var(--rust); border-bottom: 2px solid #444; margin-bottom: 20px; }
-        .room-image {
-            width: 100%;
-            height: 350px;
-            background-size: cover;
-            background-position: center;
-            border: 3px solid #111;
-            margin-bottom: 20px;
-            filter: sepia(0.3) contrast(1.1);
-        }
         .room-info { margin-bottom: 20px; font-size: 1.1em; line-height: 1.6; }
         .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         .option-btn {
@@ -83,7 +74,6 @@
     </div>
     
     <div id="room-content">
-        <div id="room-img" class="room-image"></div>
         <div class="room-info" id="room-desc"></div>
         <div id="interactive-element"></div>
     </div>
@@ -97,7 +87,6 @@ const rooms = [
     {
         title: "Sotterraneo - Muro dei Graffiti",
         desc: "Ti trovi davanti a una parete scrostata del seminterrato. Qualcuno ha scritto col gesso: 'Come si definisce lo studio del moto che ignora le forze che lo causano?'.",
-        img: "https://images.unsplash.com/photo-1595113316349-9fa4eb24f884?q=80&w=800",
         location: "Seminterrato",
         type: "open",
         answer: "cinematica",
@@ -127,7 +116,6 @@ const rooms = [
     {
         title: "Sotterraneo - Porta Bloccata",
         desc: "Una pesante porta di ferro è completamente ferma. Non si muoverà a meno che una forza esterna non intervenga a modificarne lo stato. Quale principio di Newton descrive questa proprietà della materia?",
-        img: "https://images.unsplash.com/photo-1517639493569-5666a7b2f494?q=80&w=800",
         location: "Seminterrato",
         type: "open",
         answer: "principio di inerzia",
@@ -148,7 +136,6 @@ const rooms = [
     {
         title: "Scale Antincendio",
         desc: "Esci dal seminterrato e sali di corsa le scale antincendio. Percorri uno spostamento Δx di 12 metri in 4 secondi. Qual è la tua velocità media in m/s?",
-        img: "https://images.unsplash.com/photo-1544085311-1220216c96a0?q=80&w=800",
         location: "Scale",
         type: "open",
         answer: "3",
@@ -179,7 +166,6 @@ const rooms = [
     {
         title: "Atrio - La Reazione del Muro",
         desc: "Dalla rabbia tiri un calcio a un muro dell'atrio e avverti subito un forte dolore al piede. Quale principio della dinamica spiega perché il muro esercita a sua volta una forza sul tuo piede?",
-        img: "https://images.unsplash.com/photo-1563294314-256d0a7a0120?q=80&w=800",
         location: "Atrio",
         type: "choice",
         options: ["A) 1° Principio (Inerzia)", "B) 2° Principio (F=ma)", "C) 3° Principio (Azione e Reazione)", "D) Principio di Pascal"],
@@ -189,7 +175,6 @@ const rooms = [
     {
         title: "Atrio - Il Terminale Elettronico",
         desc: "Su un vecchio computer di sorveglianza dell'atrio devi digitare il nome dell'unità di misura della Forza nel Sistema Internazionale per sbloccare la porta d'accesso al cortile.",
-        img: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=800",
         location: "Atrio",
         type: "open",
         answer: "newton",
@@ -200,7 +185,6 @@ const rooms = [
     {
         title: "Cortile - La Vasca d'Acqua",
         desc: "Nel cortile esterno vedi un pezzo di legno che galleggia in una vasca perché riceve una forza verticale dal basso verso l'alto pari al peso del volume di liquido spostato. Come si chiama questa spinta?",
-        img: "https://images.unsplash.com/photo-1495431037332-901391d4e08c?q=80&w=800",
         location: "Cortile",
         type: "choice",
         options: ["A) Spinta di Stevino", "B) Spinta di Archimede", "C) Portata Volumica", "D) Sforzo Tangenziale"],
@@ -210,7 +194,6 @@ const rooms = [
     {
         title: "Cortile - Le Tubature Esterne",
         desc: "Osservi l'acqua scorrere in un tubo orizzontale che passa da una sezione di 10 cm² a una strozzatura di 2 cm². Se la velocità nella parte larga è v1 = 1 m/s, qual è la velocità v2 (in m/s) nella strozzatura?",
-        img: "https://images.unsplash.com/photo-1518331647614-7a1f04cd34cf?q=80&w=800",
         location: "Cortile",
         type: "open",
         answer: "5", // S1v1 = S2v2 -> 10*1 = 2*v2 -> v2=5
@@ -220,7 +203,6 @@ const rooms = [
     {
         title: "Cortile - Caduta di Pressione",
         desc: "Nel condotto orizzontale della stanza precedente, cosa succede alla pressione del fluido ideale nel punto stretto dove la velocità aumenta?",
-        img: "https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?q=80&w=800",
         location: "Cortile",
         type: "choice",
         options: ["A) La pressione aumenta", "B) La pressione diminuisce", "C) La pressione resta invariata", "D) La pressione si annulla totalmente"],
@@ -230,7 +212,6 @@ const rooms = [
     {
         title: "Cortile - Lancio Oltre la Recinzione",
         desc: "Devi lanciare un gancio con una fune oltre l'alta recinzione del cortile. Trascurando l'aria, con quale angolo di inclinazione ottieni la massima distanza orizzontale (gittata massima)?",
-        img: "https://images.unsplash.com/photo-1498354178607-a79df2916198?q=80&w=800",
         location: "Cortile",
         type: "choice",
         options: ["A) 30°", "B) 45°", "C) 60°", "D) 90°"],
@@ -240,7 +221,6 @@ const rooms = [
     {
         title: "Il Cancello Finale",
         desc: "Per azionare il meccanismo del cancello d'uscita, imposta il valore (in millimetri) dell'altezza della colonna di mercurio nel barometro di Torricelli che bilancia 1 atmosfera a 0 °C.",
-        img: "https://images.unsplash.com/photo-1510511459019-5dda7724fd87?q=80&w=800",
         location: "Uscita",
         type: "open",
         answer: "760",
@@ -255,7 +235,6 @@ function loadRoom() {
     const room = rooms[currentRoom];
     document.getElementById('current-room-num').innerText = currentRoom + 1;
     document.getElementById('hint-box').style.display = 'none';
-    document.getElementById('room-img').style.backgroundImage = `url(${room.img})`;
     document.getElementById('room-desc').innerHTML = `<strong>${room.title}</strong><br><br>${room.desc}`;
     
     let html = "";
@@ -305,7 +284,6 @@ function nextRoom() {
     } else {
         document.getElementById('game-container').innerHTML = `
             <h1 style="color: var(--glow-green); text-align:center;">EVASIONE RIUSCITA</h1>
-            <div class="room-image" style="background-image: url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=800')"></div>
             <p style="text-align:center">Sei fuori. Hai superato tutte le trappole del carcere abbandonato applicando i principi e le leggi della fisica. Sei libero!</p>
             <button onclick="location.reload()" style="display:block; margin: 20px auto; padding: 15px; background: var(--rust); color: white; border: none; cursor: pointer; width: 100%; font-family: inherit; font-weight: bold;">RICOMINCIA AVVENTURA</button>
         `;
