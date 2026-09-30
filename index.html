@@ -31,15 +31,6 @@
             position: relative;
         }
         .header { text-align: center; color: var(--rust); border-bottom: 2px solid #444; margin-bottom: 20px; }
-        .room-image {
-            width: 100%;
-            height: 350px;
-            background-size: cover;
-            background-position: center;
-            border: 3px solid #111;
-            margin-bottom: 20px;
-            filter: sepia(0.3) contrast(1.1);
-        }
         .room-info { margin-bottom: 20px; font-size: 1.1em; line-height: 1.6; }
         .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         .option-btn {
@@ -83,7 +74,6 @@
     </div>
     
     <div id="room-content">
-        <div id="room-img" class="room-image"></div>
         <div class="room-info" id="room-desc"></div>
         <div id="interactive-element"></div>
     </div>
@@ -97,155 +87,140 @@ const rooms = [
     {
         title: "Sotterraneo - Muro dei Graffiti",
         desc: "Ti trovi davanti a una parete scrostata del seminterrato. Qualcuno ha scritto col gesso: 'Come si definisce lo studio del moto che ignora le forze che lo causano?'.",
-        img: "https://images.unsplash.com/photo-1595113316349-9fa4eb24f884?q=80&w=800",
         location: "Seminterrato",
         type: "open",
         answer: "cinematica",
         btnText: "PROSEGUI",
-        hint: "La Cinematica descrive il moto indipendentemente dalle cause (forze) che lo producono [6]."
+        hint: "La Cinematica descrive il moto indipendentemente dalle cause (forze) che lo producono."
     },
     {
         title: "Sotterraneo - La Cassa Metallica",
         desc: "Nell'angolo del seminterrato trovi una vecchia cassa di metallo da 0,01 m³ con una massa di 78,6 kg. Calcolando la sua densità (7860 kg/m³), consulti le tabelle dei materiali per scoprire di cosa è fatta.",
-        img: "https://images.unsplash.com/photo-1558231365-515286576b92?q=80&w=800",
         location: "Seminterrato",
         type: "choice",
         options: ["A) Alluminio (2700 kg/m³)", "B) Ferro (7860 kg/m³)", "C) Piombo (11300 kg/m³)", "D) Rame (8960 kg/m³)"],
         answer: 1, // Ferro
-        hint: "La densità è data dal rapporto tra massa e volume: 78.6 kg / 0.01 m³ = 7860 kg/m³, corrispondente al Ferro [1]."
+        hint: "La densità è data dal rapporto tra massa e volume: 78.6 kg / 0.01 m³ = 7860 kg/m³, corrispondente al Ferro."
     },
     {
         title: "Sotterraneo - Pozzo di Ventilazione",
         desc: "Guardi in alto verso un buco nel soffitto del seminterrato. Un sasso cade da un'altezza di 10 m. Senza attrito dell'aria, con quale velocità raggiungerà il pavimento?",
-        img: "https://images.unsplash.com/photo-1536566482680-fca31930a0bd?q=80&w=800",
         location: "Seminterrato",
         type: "choice",
         options: ["A) 9.8 m/s", "B) 14 m/s", "C) 19.6 m/s", "D) 98 m/s"],
         answer: 1, // sqrt(2*9.8*10) = 14
-        hint: "Nel moto di caduta libera, la velocità finale è data dalla formula v = √(2 * g * h) [7, 8]."
+        hint: "Nel moto di caduta libera, la velocità finale è data dalla formula v = √(2 * g * h)."
     },
     {
         title: "Sotterraneo - Porta Bloccata",
         desc: "Una pesante porta di ferro è completamente ferma. Non si muoverà a meno che una forza esterna non intervenga a modificarne lo stato. Quale principio di Newton descrive questa proprietà della materia?",
-        img: "https://images.unsplash.com/photo-1517639493569-5666a7b2f494?q=80&w=800",
         location: "Seminterrato",
         type: "open",
         answer: "principio di inerzia",
         btnText: "SBLOCCA SERRATURA",
-        hint: "Il Primo Principio (o Principio di Inerzia) afferma che ogni corpo permane nel suo stato di quiete o moto rettilineo uniforme finché non intervengono forze esterne [4, 9]."
+        hint: "Il Primo Principio (o Principio di Inerzia) afferma che ogni corpo permane nel suo stato di quiete o moto rettilineo uniforme finché non intervengono forze esterne."
     },
     {
         title: "Sotterraneo - Il Martinetto Idraulico",
         desc: "Per sollevare una trave rotta trovi un cric idraulico (martinetto). Ricordi che la pressione applicata a un fluido confinato si trasmette inalterata a ogni porzione del fluido e alle pareti del recipiente. Chi ha formulato questo principio?",
-        img: "https://images.unsplash.com/photo-1581092160562-40aa08e78837?q=80&w=800",
         location: "Seminterrato",
         type: "open",
         answer: "pascal",
         btnText: "PROSEGUI",
-        hint: "Il Principio di Pascal (1652) è alla base del funzionamento del martinetto e dei freni idraulici [2, 3, 10]."
+        hint: "Il Principio di Pascal (1652) è alla base del funzionamento del martinetto e dei freni idraulici."
     },
     // --- SCALE (6) ---
     {
         title: "Scale Antincendio",
         desc: "Esci dal seminterrato e sali di corsa le scale antincendio. Percorri uno spostamento Δx di 12 metri in 4 secondi. Qual è la tua velocità media in m/s?",
-        img: "https://images.unsplash.com/photo-1544085311-1220216c96a0?q=80&w=800",
         location: "Scale",
         type: "open",
         answer: "3",
         btnText: "PROSEGUI",
-        hint: "La velocità media è definita come il rapporto tra lo spostamento e l'intervallo di tempo: vm = Δx / Δt [6]."
+        hint: "La velocità media è definita come il rapporto tra lo spostamento e l'intervallo di tempo: vm = Δx / Δt."
     },
     // --- CORRIDOI E BAGNI (7-10) ---
     {
         title: "Bagni Comuni - Il Sifone",
         desc: "Ti nascondi nei bagni abbandonati. Osservi il tubo curvo a 'U' (sifone) sotto il lavandino. Quale principio fisico garantisce che il liquido in equilibrio si porti alla stessa altezza nei due rami del tubo?",
-        img: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=800",
         location: "Bagni",
         type: "choice",
         options: ["A) Principio di Archimede", "B) Vasi Comunicanti", "C) Teorema di Torricelli", "D) Moto Laminare"],
         answer: 1,
-        hint: "In due recipienti comunicanti, un fluido omogeneo si porta sempre allo stesso livello (Principio dei Vasi Comunicanti) [11]."
+        hint: "In due recipienti comunicanti, un fluido omogeneo si porta sempre allo stesso livello (Principio dei Vasi Comunicanti)."
     },
     {
         title: "Corridoio - La Conduttura Rotta",
         desc: "Il corridoio centrale è allagato d'acqua per un'altezza di 5 metri. Qual è la pressione idrostatica (sovrapressione) sul fondo? (Usa densità acqua = 1000 kg/m³ e g = 9.8 m/s²)",
-        img: "https://images.unsplash.com/photo-1510072839530-058866345ec1?q=80&w=800",
         location: "Corridoi",
         type: "choice",
         options: ["A) 49000 Pa", "B) 101325 Pa", "C) 5000 Pa", "D) 1000 Pa"],
         answer: 0, // p = rho*g*h = 1000*9.8*5
-        hint: "Applica la legge di Stevino per la pressione idrostatica: p = ρ * g * h [12-14]."
+        hint: "Applica la legge di Stevino per la pressione idrostatica: p = ρ * g * h."
     },
     {
         title: "Atrio - La Reazione del Muro",
         desc: "Dalla rabbia tiri un calcio a un muro dell'atrio e avverti subito un forte dolore al piede. Quale principio della dinamica spiega perché il muro esercita a sua volta una forza sul tuo piede?",
-        img: "https://images.unsplash.com/photo-1563294314-256d0a7a0120?q=80&w=800",
         location: "Atrio",
         type: "choice",
         options: ["A) 1° Principio (Inerzia)", "B) 2° Principio (F=ma)", "C) 3° Principio (Azione e Reazione)", "D) Principio di Pascal"],
         answer: 2,
-        hint: "Il Terzo Principio della Dinamica afferma che quando due corpi interagiscono, le forze esercitate l'uno sull'altro sono uguali in modulo e opposte in verso [4, 5]."
+        hint: "Il Terzo Principio della Dinamica afferma che quando due corpi interagiscono, le forze esercitate l'uno sull'altro sono uguali in modulo e opposte in verso."
     },
     {
         title: "Atrio - Il Terminale Elettronico",
         desc: "Su un vecchio computer di sorveglianza dell'atrio devi digitare il nome dell'unità di misura della Forza nel Sistema Internazionale per sbloccare la porta d'accesso al cortile.",
-        img: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=800",
         location: "Atrio",
         type: "open",
         answer: "newton",
         btnText: "SBLOCCA SERRATURA",
-        hint: "La forza di 1 Newton (N) è definita come la forza necessaria per imprimere un'accelerazione di 1 m/s² a una massa di 1 kg [5, 15]."
+        hint: "La forza di 1 Newton (N) è definita come la forza necessaria per imprimere un'accelerazione di 1 m/s² a una massa di 1 kg."
     },
     // --- CORTILE (11-15) ---
     {
         title: "Cortile - La Vasca d'Acqua",
         desc: "Nel cortile esterno vedi un pezzo di legno che galleggia in una vasca perché riceve una forza verticale dal basso verso l'alto pari al peso del volume di liquido spostato. Come si chiama questa spinta?",
-        img: "https://images.unsplash.com/photo-1495431037332-901391d4e08c?q=80&w=800",
         location: "Cortile",
         type: "choice",
         options: ["A) Spinta di Stevino", "B) Spinta di Archimede", "C) Portata Volumica", "D) Sforzo Tangenziale"],
         answer: 1,
-        hint: "Un corpo immerso in un liquido riceve una spinta verticale dal basso verso l'alto pari al peso del liquido spostato (Spinta di Archimede) [16, 17]."
+        hint: "Un corpo immerso in un liquido riceve una spinta verticale dal basso verso l'alto pari al peso del liquido spostato (Spinta di Archimede)."
     },
     {
         title: "Cortile - Le Tubature Esterne",
         desc: "Osservi l'acqua scorrere in un tubo orizzontale che passa da una sezione di 10 cm² a una strozzatura di 2 cm². Se la velocità nella parte larga è v1 = 1 m/s, qual è la velocità v2 (in m/s) nella strozzatura?",
-        img: "https://images.unsplash.com/photo-1518331647614-7a1f04cd34cf?q=80&w=800",
         location: "Cortile",
         type: "open",
         answer: "5", // S1v1 = S2v2 -> 10*1 = 2*v2 -> v2=5
         btnText: "PROSEGUI",
-        hint: "Per l'equazione di continuità in un fluido incomprimibile, la portata Q = S * v è costante. Quindi S1 * v1 = S2 * v2 [18, 19]."
+        hint: "Per l'equazione di continuità in un fluido incomprimibile, la portata Q = S * v è costante. Quindi S1 * v1 = S2 * v2."
     },
     {
         title: "Cortile - Caduta di Pressione",
         desc: "Nel condotto orizzontale della stanza precedente, cosa succede alla pressione del fluido ideale nel punto stretto dove la velocità aumenta?",
-        img: "https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?q=80&w=800",
         location: "Cortile",
         type: "choice",
         options: ["A) La pressione aumenta", "B) La pressione diminuisce", "C) La pressione resta invariata", "D) La pressione si annulla totalmente"],
         answer: 1,
-        hint: "Il Teorema di Bernoulli mostra che in un condotto orizzontale in presenza di una strozzatura si ha una caduta di pressione (Effetto Venturi) [20]."
+        hint: "Il Teorema di Bernoulli mostra che in un condotto orizzontale in presenza di una strozzatura si ha una caduta di pressione (Effetto Venturi)."
     },
     {
         title: "Cortile - Lancio Oltre la Recinzione",
         desc: "Devi lanciare un gancio con una fune oltre l'alta recinzione del cortile. Trascurando l'aria, con quale angolo di inclinazione ottieni la massima distanza orizzontale (gittata massima)?",
-        img: "https://images.unsplash.com/photo-1498354178607-a79df2916198?q=80&w=800",
         location: "Cortile",
         type: "choice",
         options: ["A) 30°", "B) 45°", "C) 60°", "D) 90°"],
         answer: 1,
-        hint: "Nel moto del proiettile, la gittata massima si ottiene per un angolo di lancio pari a 45° [4, 21]."
+        hint: "Nel moto del proiettile, la gittata massima si ottiene per un angolo di lancio pari a 45°."
     },
     {
         title: "Il Cancello Finale",
         desc: "Per azionare il meccanismo del cancello d'uscita, imposta il valore (in millimetri) dell'altezza della colonna di mercurio nel barometro di Torricelli che bilancia 1 atmosfera a 0 °C.",
-        img: "https://images.unsplash.com/photo-1510511459019-5dda7724fd87?q=80&w=800",
         location: "Uscita",
         type: "open",
         answer: "760",
         btnText: "SBLOCCA CANCELLO",
-        hint: "1 atmosfera standard corrisponde alla pressione esercitata da una colonna di mercurio alta esattamente 760 mm Hg (torr) [22, 23]."
+        hint: "1 atmosfera standard corrisponde alla pressione esercitata da una colonna di mercurio alta esattamente 760 mm Hg (torr)."
     }
 ];
 
@@ -255,7 +230,6 @@ function loadRoom() {
     const room = rooms[currentRoom];
     document.getElementById('current-room-num').innerText = currentRoom + 1;
     document.getElementById('hint-box').style.display = 'none';
-    document.getElementById('room-img').style.backgroundImage = `url(${room.img})`;
     document.getElementById('room-desc').innerHTML = `<strong>${room.title}</strong><br><br>${room.desc}`;
     
     let html = "";
@@ -305,7 +279,6 @@ function nextRoom() {
     } else {
         document.getElementById('game-container').innerHTML = `
             <h1 style="color: var(--glow-green); text-align:center;">EVASIONE RIUSCITA</h1>
-            <div class="room-image" style="background-image: url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=800')"></div>
             <p style="text-align:center">Sei fuori. Hai superato tutte le trappole del carcere abbandonato applicando i principi e le leggi della fisica. Sei libero!</p>
             <button onclick="location.reload()" style="display:block; margin: 20px auto; padding: 15px; background: var(--rust); color: white; border: none; cursor: pointer; width: 100%; font-family: inherit; font-weight: bold;">RICOMINCIA AVVENTURA</button>
         `;
